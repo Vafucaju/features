@@ -1,21 +1,47 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import UserContextProvider from "./src/contexts/UserContext";
+import Lista from "./src/screens/Lista";
+import ChatList from "./src/screens/ChatList";
+import Chat from "./src/screens/Chat";
+import NewChat from "./src/screens/NewChat";
+import Login from "./src/screens/Login";
+import { LogBox } from "react-native";
+import _ from "lodash";
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+
+function App() {
+  LogBox.ignoreAllLogs();
+  LogBox.ignoreLogs(["Setting a timer"]);
+  const _console = _.clone(console);
+  console.warn = (message) => {
+    if (message.indexOf("Setting a timer") <= -1) {
+      _console.warn(message);
+    }
+  };
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <UserContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Lista" component={Lista} />
+          <Stack.Screen
+            name="ChatList"
+            options={{ headerShown: false }}
+            component={ChatList}
+          />
+          <Stack.Screen
+            name="Chat"
+            options={{ headerShown: false }}
+            component={Chat}
+          />
+          <Stack.Screen name="NewChat" component={NewChat} />
+          <Stack.Screen name="Login" component={Login} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContextProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
