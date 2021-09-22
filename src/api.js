@@ -143,7 +143,21 @@ export default {
           let data = doc.data();
 
           if (data.chats) {
-            setChatList(data.chats);
+            let chats = [...data.chats];
+            chats.sort((a, b) => {
+              if (!a.lastMessageDate) {
+                return -1;
+              }
+              if (!b.lastMessageDate) {
+                return -1;
+              }
+              if (a.lastMessageDate.seconds < b.lastMessageDate.seconds) {
+                return 1;
+              } else {
+                return -1;
+              }
+            });
+            setChatList(chats);
           }
         }
       });

@@ -14,7 +14,7 @@ export const MessageItemContainer = styled.View`
 `;
 export const MessageText = styled.Text`
   font-size: 14px;
-  margin: 5px 40px 5px 5px;
+  margin: 5px 45px 5px 5px;
 `;
 export const MessageDate = styled.Text`
   font-size: 11px;

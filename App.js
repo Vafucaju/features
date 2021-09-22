@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import UserContextProvider from "./src/contexts/UserContext";
@@ -7,22 +7,20 @@ import ChatList from "./src/screens/ChatList";
 import Chat from "./src/screens/Chat";
 import NewChat from "./src/screens/NewChat";
 import Login from "./src/screens/Login";
+import MainTab from "./src/stacks/MainTab";
+import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { LogBox } from "react-native";
-import _ from "lodash";
 
 const Stack = createNativeStackNavigator();
 
 function App() {
-  LogBox.ignoreAllLogs();
-  LogBox.ignoreLogs(["Setting a timer"]);
-  const _console = _.clone(console);
-  console.warn = (message) => {
-    if (message.indexOf("Setting a timer") <= -1) {
-      _console.warn(message);
-    }
-  };
+  useEffect(() => {
+    LogBox.ignoreAllLogs();
+  }, []);
+
   return (
     <UserContextProvider>
+      <ExpoStatusBar style="light" backgroundColor="#064B46" />
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Lista" component={Lista} />
@@ -33,11 +31,18 @@ function App() {
           />
           <Stack.Screen
             name="Chat"
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+            }}
             component={Chat}
           />
           <Stack.Screen name="NewChat" component={NewChat} />
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Login"
+            component={Login}
+          />
+          <Stack.Screen name="MainTab" component={MainTab} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserContextProvider>

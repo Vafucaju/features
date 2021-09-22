@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Container, ChatArea } from "./styles";
+import { Container, ChatArea, NewChatButton, NewChatIcon } from "./styles";
 import ChatItem from "../../components/ChatItem";
 import { Button } from "react-native";
 import { useNavigation } from "@react-navigation/core";
@@ -38,28 +38,25 @@ export default ChatList = () => {
   };
 
   return (
-    <Container>
-      <ChatArea>
-        {list.map((item, key) => (
-          <ChatItem
-            key={key}
-            data={item}
-            user={user}
-            // active={activeChat.chatId === list[key].chatId}
-            active={activeChat}
-            onPress={() => settingActiveChat(list[key])}
-          />
-        ))}
-
-        <Button onPress={goToCreateNewChat} title="Novo Chat" />
-        <Button
-          onPress={async () => {
-            await AsyncStorage.removeItem("user");
-            navigation.navigate("Login");
-          }}
-          title="Sair"
-        />
-      </ChatArea>
-    </Container>
+    <>
+      <Container>
+        <ChatArea>
+          {list.map((item, key) => (
+            <ChatItem
+              key={key}
+              data={item}
+              user={user}
+              avatarIndex={key}
+              // active={activeChat.chatId === list[key].chatId}
+              active={activeChat}
+              onPress={() => settingActiveChat(list[key])}
+            />
+          ))}
+        </ChatArea>
+      </Container>
+      <NewChatButton onPress={goToCreateNewChat}>
+        <NewChatIcon name="chat" color="#fff" size={25} />
+      </NewChatButton>
+    </>
   );
 };

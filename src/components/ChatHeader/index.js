@@ -1,16 +1,18 @@
 import { useNavigation } from "@react-navigation/core";
 import React from "react";
-import { Container, Title, BackIcon, BackButton } from "./styles";
+import { Container, Title, BackIcon, BackButton, Body, Avatar } from "./styles";
 
 const ChatHeader = ({ title }) => {
   const navigation = useNavigation();
   return (
     <Container>
-      <BackButton onPress={() => navigation.goBack()}>
-        <BackIcon name="arrow-back" color="#000" size={32} />
+      <BackButton onPress={() => navigation.navigate("MainTab")}>
+        <BackIcon name="arrow-back" color="#fff" size={32} />
       </BackButton>
-
-      <Title>{title}</Title>
+      <Body>
+        <Avatar source={{ uri: `https://i.pravatar.cc/300?img=0` }} />
+        <Title>{title}</Title>
+      </Body>
     </Container>
   );
 };

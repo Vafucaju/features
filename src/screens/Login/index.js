@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/core";
 import React, { useState, useEffect, useContext } from "react";
-import { Button, TextInput } from "react-native";
+import { Button, TextInput, View } from "react-native";
 import api from "../../api";
 import { UserContext } from "../../contexts/UserContext";
 
@@ -22,7 +22,10 @@ const Login = () => {
           user: name,
         },
       });
-      navigation.navigate("ChatList");
+
+      navigation.reset({
+        routes: [{ name: "MainTab" }],
+      });
     }
   };
 
@@ -36,7 +39,9 @@ const Login = () => {
             user,
           },
         });
-        navigation.navigate("ChatList");
+        navigation.reset({
+          routes: [{ name: "MainTab" }],
+        });
       }
     };
     const erase = () => AsyncStorage.clear();
@@ -44,20 +49,31 @@ const Login = () => {
     getUser();
   }, []);
   return (
-    <>
+    <View
+      style={{
+        flex: 1,
+        marginTop: 20,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <TextInput
         onChangeText={(t) => setName(t)}
+        placeholder="Digite seu nome"
         style={{
           height: 40,
+          width: "70%",
           borderWidth: 1,
           borderColor: "#000",
           backgroundColor: "#fff",
           color: "#000",
+          borderRadius: 20,
           paddingLeft: 16,
+          marginBottom: 10,
         }}
       />
       <Button onPress={handleFacebookLogin} title="Login" />
-    </>
+    </View>
   );
 };
 

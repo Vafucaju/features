@@ -1,18 +1,29 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
-import { Button } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { Container, MessageList, InputArea, Input } from "./styles";
+import EmojiSelector from "react-native-emoji-selector";
+import { useRoute } from "@react-navigation/native";
+import {
+  Container,
+  MessageList,
+  InputArea,
+  Input,
+  SendMessageButton,
+  SendMessageIcon,
+  EmojiArea,
+  EmojiButton,
+  EmojiIcon,
+  InputContainer,
+} from "./styles";
 import MessageItem from "../../components/MessageItem";
 import api from "../../api";
 import { UserContext } from "../../contexts/UserContext";
 import ChatHeader from "../../components/ChatHeader";
 
 const Chat = () => {
-  const navigation = useNavigation();
+  const [showEmoji, setShowEmoji] = useState(false);
   const route = useRoute();
   const { state } = useContext(UserContext);
   const active = state.activeChat;
-  const { name, id } = route.params;
+  const { id } = route.params;
   const scrollRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -41,6 +52,13 @@ const Chat = () => {
     }
   };
 
+  const handleOnEmojiClick = (emoji) => {
+    setMessage(message + emoji);
+  };
+  const handleOpenEmoji = () => {
+    setShowEmoji(!showEmoji);
+  };
+
   return (
     <>
       <ChatHeader title={active.title} />
@@ -56,10 +74,29 @@ const Chat = () => {
             <MessageItem data={item} key={key} />
           ))}
         </MessageList>
-        <InputArea>
-          <Input value={message} onChangeText={(t) => setMessage(t)} />
-          <Button onPress={handleSendMessage} title="enviar" />
-        </InputArea>
+        <InputContainer>
+          <InputArea>
+            <EmojiButton onPress={handleOpenEmoji}>
+              <EmojiIcon name="smile" size={30} color="#666" />
+            </EmojiButton>
+            <Input
+              placeholder="Digite uma mensagem"
+              value={message}
+              onChangeText={(t) => setMessage(t)}
+            />
+          </InputArea>
+          <SendMessageButton onPress={handleSendMessage}>
+            <SendMessageIcon name="send" color="#fff" size={30} />
+          </SendMessageButton>
+        </InputContainer>
+        <EmojiArea display={showEmoji ? "flex" : "none"}>
+          <EmojiSelector
+            showSearchBar={false}
+            showSectionTitles={false}
+            columns={9}
+            onEmojiSelected={(emoji) => handleOnEmojiClick(emoji)}
+          />
+        </EmojiArea>
       </Container>
     </>
   );
