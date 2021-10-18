@@ -1,16 +1,91 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/core";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Button, TextInput, View } from "react-native";
 import api from "../../api";
 import { UserContext } from "../../contexts/UserContext";
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
 
 // import { Container } from './styles';
 
 const Login = () => {
-  const { dispatch: userDispatch, state } = useContext(UserContext);
+  const { dispatch: userDispatch } = useContext(UserContext);
   const [name, setName] = useState("");
   const navigation = useNavigation();
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(async (token) =>
+      setExpoPushToken(token)
+    );
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        if (data.type === "openChat") {
+          userDispatch({
+            type: "setActiveChat",
+            payload: {
+              activeChat: data.active,
+            },
+          });
+          navigation.navigate("Chat", {
+            name: data.active.title,
+            active: data.active,
+          });
+        }
+      });
+  }, []);
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      await AsyncStorage.setItem("token", token);
+      console.log(token);
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    return token;
+  }
 
   const handleFacebookLogin = async () => {
     if (name !== "") {

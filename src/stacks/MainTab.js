@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-
 const Tab = createMaterialTopTabNavigator();
 import ChatList from "../screens/ChatList";
 import Status from "../screens/Status";
@@ -18,6 +17,7 @@ function MainTab() {
       title: "WhatsApp",
     });
   }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{

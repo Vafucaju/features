@@ -1,15 +1,18 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import firebase from "./firebaseConfig";
 const db = firebase.default.firestore();
 
 export default {
   signIn: async (name) => {
     const user = await db.collection("users").doc(name).get();
+    const token = await AsyncStorage.getItem("token");
 
     if (!user.data()) {
       await db.collection("users").doc(name).set(
         {
           name,
           chats: [],
+          token,
         },
         { merge: true }
       );
@@ -133,6 +136,15 @@ export default {
     } else {
       return retorno[0];
     }
+  },
+  getChatUser: async (userID, chatID) => {
+    let user = (await db.collection("users").doc(userID).get()).data();
+    let chats = user.chats;
+
+    const retorno = chats.filter((item, i) => item.chatID === chatID);
+    user = (await db.collection("users").doc(retorno[0].with).get()).data();
+
+    return user;
   },
   onChatList: (userID, setChatList) => {
     return db

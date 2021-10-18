@@ -45,10 +45,30 @@ const Chat = () => {
     }
   }, [active]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message !== "") {
       api.sendMessage(active, state.user, "text", message, users);
+      const response = await api.getChatUser(
+        state.user,
+        active.chatID === null ? id : active.chatID
+      );
+
       setMessage("");
+
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: response.token,
+          sound: "default",
+          title: state.user,
+          body: message,
+          data: { type: "openChat", active },
+        }),
+      });
     }
   };
 
